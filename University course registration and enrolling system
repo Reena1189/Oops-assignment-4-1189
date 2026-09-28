@@ -1,1 +1,127 @@
+//university course' registration and enrolling system 
+#include <iostream>
+using namespace std;
+class StudentRecord {
+private:
+    string studentName;
+    string rollNumber;
+    int registeredCreditHours;
+    int earnedCreditHours;
+    double cgpa;
+    int disciplinaryCases;
+public:
+    StudentRecord() {
+        studentName = "Not Assigned";
+        rollNumber = "Not Assigned";
+        registeredCreditHours = 0;
+        earnedCreditHours = 0;
+        cgpa = 0.00;
+        disciplinaryCases = 0;
+        cout << "Default student record created." << endl;
+    }
+    StudentRecord(string n, string r, int reg, int earn, double gpa, int cases) {
+        studentName = (n.length() >= 3) ? n : "Not Assigned";
+        rollNumber = (r.length() >= 4) ? r : "Not Assigned";
+        registeredCreditHours = (reg >= 0 && reg <= 160) ? reg : 0;
+        earnedCreditHours = (earn >= 0 && earn <= 160 && earn <= registeredCreditHours) ? earn : 0;
+        cgpa = (gpa >= 0.0 && gpa <= 4.0) ? gpa : 0.0;
+        disciplinaryCases = (cases >= 0 && cases <= 3) ? cases : 0;
+    }
+    bool setStudentName(string n) {
+        return (n.length() >= 3) ? (studentName = n, true) : false;
+    }
+    bool setRollNumber(string r) {
+        return (rollNumber != "Not Assigned") ? false : (r.length() >= 4) ? (rollNumber = r, true) : false;
+    }
+    bool setRegisteredCreditHours(int reg) {
+        return (reg < 0 || reg > 160) ? false : (reg < earnedCreditHours) ? false : (registeredCreditHours = reg, true);
+    }
+    bool setEarnedCreditHours(int earn) {
+        return (earn < 0 || earn > 160) ? false : (earn > registeredCreditHours) ? false : (earnedCreditHours = earn, true);
+    }
+    bool setCgpa(double gpa) {
+        return (gpa >= 0.0 && gpa <= 4.0) ? (cgpa = gpa, true) : false;
+    }
+    bool setDisciplinaryCases(int cases) {
+        return (cases >= 0 && cases <= 3) ? (disciplinaryCases = cases, true) : false;
+    }
+    string getStudentName() { return studentName; }
+    string getRollNumber() { return rollNumber; }
+    int getRegisteredCreditHours() { return registeredCreditHours; }
+    int getEarnedCreditHours() { return earnedCreditHours; }
+    double getCgpa() { return cgpa; }
+    int getDisciplinaryCases() { return disciplinaryCases; }
+    bool updateAcademicProgress(int newReg, int newEarn, double newGpa) {
+        return (newReg < 0 || newReg > 160 || newEarn < 0 || newEarn > 160 || newEarn > newReg || newGpa < 0.0 || newGpa > 4.0) ? false : (registeredCreditHours = newReg, earnedCreditHours = newEarn, cgpa = newGpa, true);
+    }
+    bool isEligibleForScholarship() {
+        return (registeredCreditHours == 0) ? false : (cgpa < 3.50) ? false : (earnedCreditHours < 30) ? false : (disciplinaryCases != 0) ? false : ((earnedCreditHours * 100.0) / registeredCreditHours < 75.0) ? false : true;
+    }
+    void displayRecord() {
+        cout << "Student Name: " << studentName << endl;
+        cout << "Roll Number: " << rollNumber << endl;
+        cout << "Registered Credit Hours: " << registeredCreditHours << endl;
+        cout << "Earned Credit Hours: " << earnedCreditHours << endl;
+        cout << "CGPA: " << cgpa << endl;
+        cout << "Disciplinary Cases: " << disciplinaryCases << endl;
+        cout << "Scholarship Status: " << (isEligibleForScholarship() ? "Eligible" : "Not Eligible") << endl;
+        cout << "           ------        "<<endl;
+    }
+};
+int main() {
+    cout << " Object 1: Default Constructor" << endl;
+    StudentRecord s1;
+    s1.displayRecord();
+    s1.setStudentName("Reena");
+    s1.setRollNumber("BSCS-101");
+    s1.setRegisteredCreditHours(100);
+    s1.setEarnedCreditHours(80);
+    s1.setCgpa(3.8);
+    s1.setDisciplinaryCases(0);
+    s1.displayRecord();
 
+    cout << "Object 2: Completely Valid Parameterized Object ==========" << endl;
+    StudentRecord s2("Ali Khan", "BSCS-102", 120, 90, 3.6, 0);
+    s2.displayRecord();
+
+    cout << " Object 3: Invalid Parameterized Object " << endl;
+    StudentRecord s3("", "AB", 200, 250, 5.5, -2);
+    s3.displayRecord();
+
+    cout << " Object 4: Boundary-Value Object " << endl;
+    StudentRecord s4a("Boundary Test", "BSCS-160", 160, 160, 4.00, 0);
+    s4a.displayRecord();
+    StudentRecord s4b("Boundary Test", "BSCS-161", 160, 160, 0.00, 3);
+    s4b.displayRecord();
+
+    cout << "Part L: Compulsory Analytical Test Cases " << endl;
+    StudentRecord t;
+    cout << "1. Attempt to assign an empty student name: " << (t.setStudentName("") ? "Accepted" : "Rejected") << endl;
+    cout << "2. Attempt to assign a two-character name: " << (t.setStudentName("Ab") ? "Accepted" : "Rejected") << endl;
+    cout << "3. Assign a valid name after an invalid attempt: " << (t.setStudentName("Reena Pahwal") ? "Accepted" : "Rejected") << endl;
+    cout << "4. Assign a valid roll number to a default object: " << (t.setRollNumber("BSCS-200") ? "Accepted" : "Rejected") << endl;
+    cout << "5. Attempt to change an already-assigned roll number: " << (t.setRollNumber("BSCS-999") ? "Accepted" : "Rejected") << endl;
+
+    t.setRegisteredCreditHours(100);
+    cout << "6. Attempt to set CGPA to -0.01: " << (t.setCgpa(-0.01) ? "Accepted" : "Rejected") << endl;
+    cout << "7. Attempt to set CGPA to 4.01: " << (t.setCgpa(4.01) ? "Accepted" : "Rejected") << endl;
+    cout << "8. Set CGPA to exactly 0.00: " << (t.setCgpa(0.00) ? "Accepted" : "Rejected") << endl;
+    cout << "9. Set CGPA to exactly 4.00: " << (t.setCgpa(4.00) ? "Accepted" : "Rejected") << endl;
+
+    t.setRegisteredCreditHours(80);
+    cout << "10. Attempt to set earned credits greater than registered credits: " << (t.setEarnedCreditHours(90) ? "Accepted" : "Rejected") << endl;
+    t.setEarnedCreditHours(75);
+    cout << "11. Attempt to reduce registered credits below earned credits: " << (t.setRegisteredCreditHours(60) ? "Accepted" : "Rejected") << endl;
+    cout << "12. Attempt to assign negative disciplinary cases: " << (t.setDisciplinaryCases(-1) ? "Accepted" : "Rejected") << endl;
+    StudentRecord zero;
+    cout << "13. Test scholarship calculation when registered credits are 0: " << (zero.isEligibleForScholarship() ? "Eligible" : "Not Eligible - Division by zero handled") << endl;
+    StudentRecord atomic("Atomic Test", "BSCS-300", 100, 80, 3.2, 0);
+    cout << "14. Test a valid atomic academic update (120, 100, 3.5): " << (atomic.updateAcademicProgress(120, 100, 3.5) ? "Accepted" : "Rejected") << endl;
+    atomic.displayRecord();
+    cout << "15. Test an invalid atomic academic update and prove that no value changed:" << endl;
+    cout << "Before: " << atomic.getRegisteredCreditHours() << ", " << atomic.getEarnedCreditHours() << ", " << atomic.getCgpa() << endl;
+    cout << "Attempt (120, 125, 3.5): " << (atomic.updateAcademicProgress(120, 125, 3.5) ? "Accepted" : "Rejected") << endl;
+    cout << "After: " << atomic.getRegisteredCreditHours() << ", " << atomic.getEarnedCreditHours() << ", " << atomic.getCgpa() << " - Unchanged" << endl;
+    atomic.displayRecord();
+    return 0;
+}
